@@ -155,8 +155,8 @@ static void gc_mark(SCM p) {
         case T_EOF_VALUE:
             break;
         default:
-            fprintf(stderr, "DEBUG: Should not reach here! (tt=%d)\n",
-                    TYPE(pp));
+            fprintf(stderr, "DEBUG: Should not reach here! (tt=%lu)\n",
+                    (unsigned long)TYPE(pp));
             break;
         }
 }
@@ -198,7 +198,7 @@ static void gc_sweep(void) {
 
 void init_storage(unsigned heapsize) {
     SCM ptr, next;
-    int i, count;
+    int i;
 
     /* allocate unique values */
 
@@ -231,11 +231,9 @@ void init_storage(unsigned heapsize) {
 
     /* initialize the free list */
     ptr = free_list = heap_start;
-    count = 0;
     while (true) {
         SET_BOXED_TYPE(ptr, T_FREE_CELL);
         next = ptr + 1;
-        count++;
         if (next < heap_end) {
             CDR(ptr) = next;
             ptr = next;

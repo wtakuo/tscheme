@@ -31,7 +31,7 @@ PREFIX = /opt
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib/tscheme
 
-CC = gcc -m32
+CC = gcc
 DBGFLAGS = -g #-DDEBUG
 OPTFLAGS =
 CFLAGS = -std=c99 -pedantic -Wall -Werror $(DBGFLAGS) $(OPTFLAGS)

@@ -167,7 +167,7 @@ void do_load_if_exists(char *file) {
 static void do_write(SCM x, FILE *fp, int displayp) {
     switch (TYPE(x)) {
     case T_FIXNUM:
-        fprintf(fp, "%d", FIXNUM(x));
+        fprintf(fp, "%ld", FIXNUM(x));
         break;
     case T_BOOLEAN:
         if (EQ(x, boolean_true))
@@ -203,10 +203,10 @@ static void do_write(SCM x, FILE *fp, int displayp) {
         fprintf(fp, "#<fsubr %s>", STR_DATA(SYM_PNAME(SUBR_NAME(x))));
         break;
     case T_CLOSURE:
-        fprintf(fp, "#<closure %x>", (unsigned)x);
+        fprintf(fp, "#<closure %lx>", (unsigned long)(uintptr_t)x);
         break;
     case T_ENV:
-        fprintf(fp, "#<environment %x>", (unsigned)x);
+        fprintf(fp, "#<environment %lx>", (unsigned long)(uintptr_t)x);
         break;
     case T_PORT:
         fprintf(fp, "#<port %s>", PORT_NAME(x));

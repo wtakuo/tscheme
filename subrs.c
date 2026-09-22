@@ -384,9 +384,9 @@ SCM s_number_to_string(SCM n) {
     if (!IS_FIXNUM(n))
         wta_error("number->string", 1);
     char *newstr;
-    if ((newstr = (char *)malloc(20)) == NULL)
+    if ((newstr = (char *)malloc(32)) == NULL)
         fatal_error("malloc: s_number_to_string");
-    sprintf(newstr, "%d", FIXNUM(n));
+    sprintf(newstr, "%ld", FIXNUM(n));
     SCM x;
     NEWCELL(x, T_STRING);
     STR_DIM(x) = (unsigned int)strlen(newstr);

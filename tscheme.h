@@ -22,6 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdint.h>
+
 #define BANNER "Tscheme\n\n"
 
 #define PROMPT "> "
@@ -40,25 +42,30 @@
 
 /* *** Assumption ***
 
-   1 word = 4 bytes = 32 bits
+   1 word = 8 bytes = 64 bits
 
-   pointer width          = 32 bits
-   unsigned number length = 32 bits
+   pointer width          = 64 bits
+   unsigned number length = 64 bits
    short numbe length     = 16 bits
-   addressing             = byte adressing with 4 bytes boundary
+   addressing             = byte adressing with 8 bytes boundary
+
+   Pointer/integer conversions use uintptr_t/intptr_t (stdint.h) so that
+   the tagging scheme below works regardless of pointer width (32 or 64
+   bits): only the low ITYP_BITS bits of a pointer value are assumed to
+   be 0, which malloc's alignment guarantees on both.
 
 */
 
 /* data type implementations
 
-   object pointer   : PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP00
-   immediate fixnum : NNNNNNNNNNNNNNNNNNNNNNNNNNNNNN01
+   object pointer   : PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP00
+   immediate fixnum : NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN01
 
 */
 
 #define ITYP_BITS   2
-#define ITYP_FIXNUM ((unsigned)1)
-#define ITYP_MASK   ((unsigned)3)
+#define ITYP_FIXNUM ((uintptr_t)1)
+#define ITYP_MASK   ((uintptr_t)3)
 
 /* Type tags */
 
@@ -127,10 +134,10 @@ struct object {
 
 typedef struct object* SCM;
 
-#define EQ(x,y)       ((unsigned)(x) == (unsigned)(y))
+#define EQ(x,y)       ((uintptr_t)(x) == (uintptr_t)(y))
 #define NEQ(x,y)      (!(EQ (x,y)))
 
-#define IMM_TYPE(x) ((unsigned)(x) & ITYP_MASK)
+#define IMM_TYPE(x) ((uintptr_t)(x) & ITYP_MASK)
 #define IS_IMM(x)   (IMM_TYPE(x)!=0)
 
 #define BOXED_TYPE(x)       ((unsigned)((x)->type_tags))
@@ -140,9 +147,9 @@ typedef struct object* SCM;
 #define TYPE(x)            (IS_IMM(x)?IMM_TYPE(x):BOXED_TYPE(x))
 #define IS_TYPE(x,t)       (TYPE(x)==(unsigned)(t))
 
-#define IS_FIXNUM(x) (((unsigned)(x))&ITYP_FIXNUM)
-#define MK_FIXNUM(n) ((SCM)((((unsigned)(n))<<ITYP_BITS)|ITYP_FIXNUM))
-#define FIXNUM(x)    ((int)(((int)(x))>>ITYP_BITS))
+#define IS_FIXNUM(x) (((uintptr_t)(x))&ITYP_FIXNUM)
+#define MK_FIXNUM(n) ((SCM)((((uintptr_t)(n))<<ITYP_BITS)|ITYP_FIXNUM))
+#define FIXNUM(x)    ((long)(((intptr_t)(x))>>ITYP_BITS))
 
 #define IS_BOOLEAN(x)      IS_TYPE(x,T_BOOLEAN)
 #define BOOLEAN(x) ((x)->as.boolean)
