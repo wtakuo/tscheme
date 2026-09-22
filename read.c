@@ -27,6 +27,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <setjmp.h>
+#include <errno.h>
 
 #include "tscheme.h"
 
@@ -180,8 +181,13 @@ static SCM do_readtoken(FILE *fp) {
         case '\n':
             ungetc(c,fp);
             strbuf[i] = '\0';
-            if (is_number_str(strbuf))
-                return (SCM)MK_FIXNUM(atoi(strbuf));
+            if (is_number_str(strbuf)) {
+                errno = 0;
+                long n = strtol(strbuf, NULL, 10);
+                if (errno == ERANGE)
+                    error1("read: number out of range: %s\n", strbuf);
+                return (SCM)MK_FIXNUM(n);
+            }
             else
                 return mk_symbol(strbuf);
         default:

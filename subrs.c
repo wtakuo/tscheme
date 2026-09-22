@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <setjmp.h>
 #include <string.h>
+#include <errno.h>
 
 #include "tscheme.h"
 
@@ -377,7 +378,11 @@ SCM s_greaterequal(SCM x, SCM y) {
 SCM s_string_to_number(SCM s) {
     if (!IS_STRING(s))
         wta_error("string->number", 1);
-    return MK_FIXNUM(atoi(STR_DATA(s)));
+    errno = 0;
+    long n = strtol(STR_DATA(s), NULL, 10);
+    if (errno == ERANGE)
+        error1("string->number: number out of range: %s\n", STR_DATA(s));
+    return MK_FIXNUM(n);
 }
 
 SCM s_number_to_string(SCM n) {
