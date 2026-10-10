@@ -72,14 +72,20 @@ SCM s_open_output_file(SCM file) {
 SCM s_close_input_port(SCM port) {
     if (!IS_PORT(port))
         wta_error("close-input-port", 1);
-    fclose(PORT_FPTR(port));
+    if (PORT_FPTR(port) != NULL) {
+        fclose(PORT_FPTR(port));
+        PORT_FPTR(port) = NULL;
+    }
     return unspecified_value;
 }
 
 SCM s_close_output_port(SCM port) {
     if (!IS_PORT(port))
         wta_error("close-output-port", 1);
-    fclose(PORT_FPTR(port));
+    if (PORT_FPTR(port) != NULL) {
+        fclose(PORT_FPTR(port));
+        PORT_FPTR(port) = NULL;
+    }
     return unspecified_value;
 }
 

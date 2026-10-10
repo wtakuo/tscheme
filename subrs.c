@@ -454,6 +454,15 @@ SCM s_listify_environment(SCM env) {
     return ENV(env);
 }
 
+/* SYS:EVAL exp env */
+SCM s_eval(SCM exp, SCM env) {
+    /* The environment is an association list (or '()); reject anything
+       else so a non-list value is never dereferenced as an env cell. */
+    if (!(IS_NULL(env) || IS_PAIR(env)))
+        wta_error("sys:eval", 2);
+    return evaluate(exp, env);
+}
+
 void init_subrs(void) {
     /* Any */
     mk_subr("EQ?", (SCM (*)(void))s_eq, 2);
@@ -527,5 +536,5 @@ void init_subrs(void) {
     mk_subr("LISTIFY-ENVIRONMENT", (SCM (*)(void))s_listify_environment, 1);
 
     /* Special */
-    mk_subr("SYS:EVAL", (SCM (*)(void))evaluate, 2);
+    mk_subr("SYS:EVAL", (SCM (*)(void))s_eval, 2);
 }

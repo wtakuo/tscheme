@@ -173,8 +173,10 @@ static void gc_sweep(void) {
                     free(STR_DATA(p));
                     break;
                 case T_PORT:
-                    fclose(PORT_FPTR(p));
-                    fprintf(stderr, "file %s is closed\n", PORT_NAME(p));
+                    if (PORT_FPTR(p) != NULL) {
+                        fclose(PORT_FPTR(p));
+                        fprintf(stderr, "file %s is closed\n", PORT_NAME(p));
+                    }
                     break;
                 default:
                     break;
