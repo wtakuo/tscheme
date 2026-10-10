@@ -65,8 +65,8 @@ SCM newsym(SCM pname, SCM value) {
 
 SCM mk_symbol(char *name) {
     /* computre hash location */
-    long hash = 0, c;
-    char *s = name;
+    unsigned long hash = 0, c;
+    unsigned char *s = (unsigned char *)name;
     while ((c = *s++))
         hash = ((hash * 17)^c) % obarray_dim;
     SCM sl = obarray[hash];

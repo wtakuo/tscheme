@@ -133,6 +133,8 @@ static SCM do_readstring(FILE *fp) {
     char c, *newstr;
     int i = 0;
     while ((c = getc(fp)) != EOF) {
+        if (i >= STRBUF_SIZE)
+            fatal_error("I/O buffer size exceeded");
         switch (c) {
         case '\\':
             c = getc(fp);
